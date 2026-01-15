@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bankin' - MCP Financial Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #22C55E;
+            --primary-glow: rgba(34, 197, 94, 0.25);
+            --secondary: #8B5CF6;
+            --accent: #F59E0B;
+            --info: #3B82F6;
+            --bg-dark: #09090B;
+            --bg-card: #18181B;
+            --bg-elevated: #27272A;
+            --bg-chat: #0F0F11;
+            --text-primary: #FAFAFA;
+            --text-secondary: #A1A1AA;
+            --text-muted: #71717A;
+            --border: #3F3F46;
+            --gradient-main: linear-gradient(135deg, #22C55E 0%, #8B5CF6 50%, #3B82F6 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(180deg, rgba(34, 197, 94, 0.08) 0%, transparent 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-main);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 24px var(--primary-glow);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-badge {
+            background: rgba(139, 92, 246, 0.15);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            color: var(--secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { box-shadow: 0 0 0 0 var(--primary-glow); }
+            50% { box-shadow: 0 0 0 8px transparent; }
+        }
+
+        /* Main Layout */
+        .main-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 320px 1fr 340px;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+            gap: 0;
+        }
+
+        @media (max-width: 1200px) {
+            .main-container { grid-template-columns: 1fr; }
+            .sidebar-left, .sidebar-right { display: none; }
+        }
+
+        /* Sidebar */
+        .sidebar-left, .sidebar-right {
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem;
+            overflow-y: auto;
+            height: calc(100vh - 80px);
+        }
+
+        .sidebar-right {
+            border-right: none;
+            border-left: 1px solid var(--border);
+        }
+
+        .sidebar-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-title {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Account Cards */
+        .account-card {
+            background: var(--bg-elevated);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .account-card:hover {
+            border-color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .account-card.active {
+            border-color: var(--primary);
+            background: rgba(34, 197, 94, 0.08);
+        }
+
+        .account-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.6rem;
+        }
+
+        .account-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .account-type {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            background: var(--bg-dark);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .account-balance {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .account-iban {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 0.4rem;
+        }
+
+        /* Quick Actions */
+        .quick-action {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .quick-action:hover {
+            background: var(--bg-dark);
+            border-color: var(--secondary);
+            color: var(--secondary);
+        }
+
+        .quick-action-icon {
+            font-size: 1.1rem;
+        }
+
+        /* Chat Container */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 80px);
+            background: var(--bg-chat);
+        }
+
+        .chat-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-card);
+        }
+
+        .chat-title {
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .chat-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Messages Area */
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message {
+            max-width: 85%;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            align-self: flex-end;
+        }
+
+        .message.assistant {
+            align-self: flex-start;
+        }
+
+        .message-content {
+            padding: 1rem 1.25rem;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .message.user .message-content {
+            background: var(--gradient-main);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.assistant .message-content {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-meta {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 0.4rem;
+            padding: 0 0.5rem;
+        }
+
+        .message.user .message-meta {
+            text-align: right;
+        }
+
+        /* Data Cards in Messages */
+        .data-card {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 0.75rem;
+        }
+
+        .data-card-title {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.6rem;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+
+        .data-row:last-child {
+            border-bottom: none;
+        }
+
+        .data-label {
+            color: var(--text-secondary);
+        }
+
+        .data-value {
+            font-family: 'Fira Code', monospace;
+            font-weight: 500;
+        }
+
+        .data-value.positive { color: var(--primary); }
+        .data-value.negative { color: #EF4444; }
+        .data-value.highlight { color: var(--accent); }
+
+        /* Transaction List in Messages */
+        .txn-list {
+            margin-top: 0.75rem;
+        }
+
+        .txn-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem;
+            background: var(--bg-dark);
+            border-radius: 8px;
+            margin-bottom: 0.4rem;
+        }
+
+        .txn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            background: var(--bg-elevated);
+        }
+
+        .txn-info { flex: 1; }
+
+        .txn-name {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .txn-category {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+
+        .txn-amount {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            background: var(--bg-card);
+        }
+
+        .input-container {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-end;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .chat-input {
+            width: 100%;
+            background: var(--bg-elevated);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            padding: 1rem 1.25rem;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: 'Outfit', sans-serif;
+            resize: none;
+            transition: all 0.3s;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+        }
+
+        .chat-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .send-btn {
+            width: 52px;
+            height: 52px;
+            background: var(--gradient-main);
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 32px var(--primary-glow);
+        }
+
+        /* Suggestions */
+        .suggestions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .suggestion-chip {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            padding: 0.5rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .suggestion-chip:hover {
+            background: var(--bg-dark);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Right Sidebar */
+        .mcp-info {
+            background: var(--bg-elevated);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .mcp-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .mcp-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-main);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .mcp-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .mcp-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .tool-list {
+            margin-top: 0.75rem;
+        }
+
+        .tool-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .tool-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+
+        /* API Log */
+        .api-log {
+            background: var(--bg-dark);
+            border-radius: 10px;
+            padding: 0.75rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.65rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 0.4rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-method {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .log-endpoint {
+            color: var(--text-secondary);
+        }
+
+        .log-time {
+            color: var(--text-muted);
+            font-size: 0.6rem;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.25rem;
+            background: var(--bg-elevated);
+            border-radius: 16px;
+            border-bottom-left-radius: 4px;
+            max-width: 120px;
+        }
+
+        .typing-indicator.active {
+            display: flex;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-6px); }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🤖</div>
+                <div>
+                    <div class="logo-text">Bankin' MCP</div>
+                </div>
+                <span class="logo-badge">Model Context Protocol</span>
+            </div>
+            <div class="header-info">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span>Bridge API Connected</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <aside class="sidebar-left">
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <span>🏦</span> Connected Accounts
+                </div>
+                <div class="account-card active" onclick="selectAccount(0)">
+                    <div class="account-header">
+                        <span class="account-name">Compte Courant</span>
+                        <span class="account-type">Checking</span>
+                    </div>
+                    <div class="account-balance">€3,847.52</div>
+                    <div class="account-iban">FR76 •••• •••• 4821</div>
+                </div>
+                <div class="account-card" onclick="selectAccount(1)">
+                    <div class="account-header">
+                        <span class="account-name">Livret A</span>
+                        <span class="account-type">Savings</span>
+                    </div>
+                    <div class="account-balance">€12,450.00</div>
+                    <div class="account-iban">FR76 •••• •••• 9102</div>
+                </div>
+                <div class="account-card" onclick="selectAccount(2)">
+                    <div class="account-header">
+                        <span class="account-name">Compte Joint</span>
+                        <span class="account-type">Joint</span>
+                    </div>
+                    <div class="account-balance">€1,234.87</div>
+                    <div class="account-iban">FR76 •••• •••• 5567</div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <span>⚡</span> Quick Queries
+                </div>
+                <div class="quick-action" onclick="askQuestion('What is my current balance?')">
+                    <span class="quick-action-icon">💰</span>
+                    <span>Check balance</span>
+                </div>
+                <div class="quick-action" onclick="askQuestion('Show my spending this month')">
+                    <span class="quick-action-icon">📊</span>
+                    <span>Monthly spending</span>
+                </div>
+                <div class="quick-action" onclick="askQuestion('Show my last 5 transactions')">
+                    <span class="quick-action-icon">📋</span>
+                    <span>Recent transactions</span>
+                </div>
+                <div class="quick-action" onclick="askQuestion('Will I go negative this month?')">
+                    <span class="quick-action-icon">⚠️</span>
+                    <span>Overdraft forecast</span>
+                </div>
+                <div class="quick-action" onclick="askQuestion('How much did I spend on restaurants?')">
+                    <span class="quick-action-icon">🍽️</span>
+                    <span>Restaurant spending</span>
+                </div>
+            </div>
+        </aside>
+
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="chat-title">
+                    <span>💬</span> Financial Assistant
+                </div>
+                <div class="chat-subtitle">Ask questions about your finances in natural language</div>
+            </div>
+
+            <div class="messages-area" id="messagesArea">
+                <div class="message assistant">
+                    <div class="message-content">
+                        👋 Hello! I'm your Bankin' Financial Assistant powered by MCP (Model Context Protocol). 
+                        I can help you understand your finances by querying your connected bank accounts securely.
+                        <br><br>
+                        Try asking me things like:
+                        <br>• "What's my balance?"
+                        <br>• "How much did I spend on groceries this month?"
+                        <br>• "Show my biggest expenses"
+                    </div>
+                    <div class="message-meta">Just now</div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <textarea 
+                            class="chat-input" 
+                            id="chatInput"
+                            rows="1"
+                            placeholder="Ask about your finances..."
+                        ></textarea>
+                    </div>
+                    <button class="send-btn" onclick="sendMessage()">→</button>
+                </div>
+                <div class="suggestions">
+                    <span class="suggestion-chip" onclick="askQuestion('What subscriptions do I have?')">📺 My subscriptions</span>
+                    <span class="suggestion-chip" onclick="askQuestion('Compare spending vs last month')">📈 Compare months</span>
+                    <span class="suggestion-chip" onclick="askQuestion('Find duplicate charges')">🔍 Find duplicates</span>
+                </div>
+            </div>
+        </div>
+
+        <aside class="sidebar-right">
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <span>🔌</span> MCP Integration
+                </div>
+                <div class="mcp-info">
+                    <div class="mcp-header">
+                        <div class="mcp-icon">⚡</div>
+                        <span class="mcp-title">Bridge MCP Server</span>
+                    </div>
+                    <div class="mcp-desc">
+                        Secure interface allowing LLMs to query financial data via standardized MCP protocol.
+                    </div>
+                    <div class="tool-list">
+                        <div class="tool-item">
+                            <span class="tool-dot"></span>
+                            <span>get_accounts</span>
+                        </div>
+                        <div class="tool-item">
+                            <span class="tool-dot"></span>
+                            <span>get_transactions</span>
+                        </div>
+                        <div class="tool-item">
+                            <span class="tool-dot"></span>
+                            <span>get_balance</span>
+                        </div>
+                        <div class="tool-item">
+                            <span class="tool-dot"></span>
+                            <span>analyze_spending</span>
+                        </div>
+                        <div class="tool-item">
+                            <span class="tool-dot"></span>
+                            <span>forecast_balance</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <span>📡</span> API Activity
+                </div>
+                <div class="api-log" id="apiLog">
+                    <div class="log-entry">
+                        <span class="log-method">GET</span>
+                        <span class="log-endpoint">/accounts</span>
+                        <div class="log-time">Connected</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">
+                    <span>🔒</span> Security
+                </div>
+                <div class="mcp-info">
+                    <div class="mcp-desc">
+                        ✓ PSD2 Compliant<br>
+                        ✓ Read-only access<br>
+                        ✓ No credentials stored<br>
+                        ✓ End-to-end encrypted
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <script>
+        const accounts = [
+            { name: 'Compte Courant', balance: 3847.52, type: 'checking' },
+            { name: 'Livret A', balance: 12450.00, type: 'savings' },
+            { name: 'Compte Joint', balance: 1234.87, type: 'joint' }
+        ];
+
+        const transactions = [
+            { name: 'Carrefour Market', category: 'Groceries', amount: -67.43, icon: '🛒', date: 'Today' },
+            { name: 'SNCF Connect', category: 'Transport', amount: -45.00, icon: '🚄', date: 'Yesterday' },
+            { name: 'Netflix', category: 'Subscriptions', amount: -17.99, icon: '📺', date: '2 days ago' },
+            { name: 'Uber Eats', category: 'Restaurants', amount: -23.50, icon: '🍔', date: '3 days ago' },
+            { name: 'Salary - Entreprise SAS', category: 'Income', amount: 3200.00, icon: '💰', date: '5 days ago' }
+        ];
+
+        const monthlySpending = {
+            groceries: 324.50,
+            transport: 156.80,
+            restaurants: 189.40,
+            subscriptions: 67.97,
+            utilities: 145.00,
+            total: 883.67
+        };
+
+        let selectedAccount = 0;
+
+        function selectAccount(index) {
+            selectedAccount = index;
+            document.querySelectorAll('.account-card').forEach((card, i) => {
+                card.classList.toggle('active', i === index);
+            });
+        }
+
+        function askQuestion(question) {
+            document.getElementById('chatInput').value = question;
+            sendMessage();
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            addMessage(message, 'user');
+            input.value = '';
+
+            logApiCall('POST', '/mcp/query');
+            
+            showTyping();
+            
+            setTimeout(() => {
+                hideTyping();
+                const response = generateResponse(message.toLowerCase());
+                addMessage(response.text, 'assistant', response.data);
+                logApiCall('GET', response.endpoint);
+            }, 1500);
+        }
+
+        function addMessage(text, type, data = null) {
+            const area = document.getElementById('messagesArea');
+            const msg = document.createElement('div');
+            msg.className = `message ${type}`;
+            
+            let content = `<div class="message-content">${text}`;
+            
+            if (data) {
+                if (data.type === 'balance') {
+                    content += `
+                        <div class="data-card">
+                            <div class="data-card-title">Account Balance</div>
+                            <div class="data-row">
+                                <span class="data-label">Current Balance</span>
+                                <span class="data-value positive">€${data.balance.toLocaleString('fr-FR', {minimumFractionDigits: 2})}</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="data-label">Available</span>
+                                <span class="data-value">€${(data.balance - 50).toLocaleString('fr-FR', {minimumFractionDigits: 2})}</span>
+                            </div>
+                        </div>
+                    `;
+                } else if (data.type === 'transactions') {
+                    content += `<div class="txn-list">`;
+                    data.items.forEach(txn => {
+                        const amountClass = txn.amount > 0 ? 'positive' : 'negative';
+                        const sign = txn.amount > 0 ? '+' : '';
+                        content += `
+                            <div class="txn-item">
+                                <div class="txn-icon">${txn.icon}</div>
+                                <div class="txn-info">
+                                    <div class="txn-name">${txn.name}</div>
+                                    <div class="txn-category">${txn.category} · ${txn.date}</div>
+                                </div>
+                                <div class="txn-amount ${amountClass}">${sign}€${Math.abs(txn.amount).toFixed(2)}</div>
+                            </div>
+                        `;
+                    });
+                    content += `</div>`;
+                } else if (data.type === 'spending') {
+                    content += `
+                        <div class="data-card">
+                            <div class="data-card-title">Monthly Spending</div>
+                            <div class="data-row">
+                                <span class="data-label">🛒 Groceries</span>
+                                <span class="data-value negative">€${data.groceries.toFixed(2)}</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="data-label">🍽️ Restaurants</span>
+                                <span class="data-value negative">€${data.restaurants.toFixed(2)}</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="data-label">🚗 Transport</span>
+                                <span class="data-value negative">€${data.transport.toFixed(2)}</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="data-label">📺 Subscriptions</span>
+                                <span class="data-value negative">€${data.subscriptions.toFixed(2)}</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="data-label"><strong>Total</strong></span>
+                                <span class="data-value highlight"><strong>€${data.total.toFixed(2)}</strong></span>
+                            </div>
+                        </div>
+                    `;
+                } else if (data.type === 'forecast') {
+                    content += `
+                        <div class="data-card">
+                            <div class="data-card-title">30-Day Forecast</div>
+                            <div class="data-row">
+                                <span class="data-label">Current Balance</span>
+                                <span class="data-value">€${data.current.toFixed(2)}</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="data-label">Expected Income</span>
+                                <span class="data-value positive">+€${data.income.toFixed(2)}</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="data-label">Predicted Expenses</span>
+                                <span class="data-value negative">-€${data.expenses.toFixed(2)}</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="data-label"><strong>End of Month</strong></span>
+                                <span class="data-value ${data.endBalance > 0 ? 'positive' : 'negative'}"><strong>€${data.endBalance.toFixed(2)}</strong></span>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            content += `</div><div class="message-meta">${new Date().toLocaleTimeString()}</div>`;
+            msg.innerHTML = content;
+            area.appendChild(msg);
+            area.scrollTop = area.scrollHeight;
+        }
+
+        function generateResponse(query) {
+            const account = accounts[selectedAccount];
+            
+            if (query.includes('balance') || query.includes('how much do i have')) {
+                return {
+                    text: `Here's the current balance for your ${account.name}:`,
+                    data: { type: 'balance', balance: account.balance },
+                    endpoint: '/accounts/' + selectedAccount + '/balance'
+                };
+            }
+            
+            if (query.includes('transaction') || query.includes('last')) {
+                return {
+                    text: `Here are your recent transactions:`,
+                    data: { type: 'transactions', items: transactions },
+                    endpoint: '/accounts/' + selectedAccount + '/transactions'
+                };
+            }
+            
+            if (query.includes('spending') || query.includes('month')) {
+                return {
+                    text: `Here's your spending breakdown for this month:`,
+                    data: { type: 'spending', ...monthlySpending },
+                    endpoint: '/analytics/spending'
+                };
+            }
+            
+            if (query.includes('restaurant') || query.includes('food') || query.includes('dining')) {
+                return {
+                    text: `You've spent **€189.40** on restaurants this month across 8 transactions. That's 12% higher than last month.`,
+                    data: { 
+                        type: 'transactions', 
+                        items: transactions.filter(t => t.category === 'Restaurants' || t.category === 'Groceries')
+                    },
+                    endpoint: '/analytics/category/restaurants'
+                };
+            }
+            
+            if (query.includes('overdraft') || query.includes('negative') || query.includes('forecast')) {
+                const forecast = {
+                    current: account.balance,
+                    income: 3200,
+                    expenses: 1450,
+                    endBalance: account.balance + 3200 - 1450
+                };
+                return {
+                    text: forecast.endBalance > 0 
+                        ? `✅ Good news! Based on your spending patterns and expected income, you should have a positive balance at the end of the month.`
+                        : `⚠️ Warning: You may go negative. Consider reducing spending or transferring funds.`,
+                    data: { type: 'forecast', ...forecast },
+                    endpoint: '/forecast/balance'
+                };
+            }
+            
+            if (query.includes('subscription')) {
+                return {
+                    text: `I found 4 active subscriptions totaling **€67.97/month**:`,
+                    data: { 
+                        type: 'transactions', 
+                        items: [
+                            { name: 'Netflix', category: 'Streaming', amount: -17.99, icon: '📺', date: 'Monthly' },
+                            { name: 'Spotify', category: 'Music', amount: -9.99, icon: '🎵', date: 'Monthly' },
+                            { name: 'Amazon Prime', category: 'Shopping', amount: -6.99, icon: '📦', date: 'Monthly' },
+                            { name: 'iCloud Storage', category: 'Cloud', amount: -2.99, icon: '☁️', date: 'Monthly' }
+                        ]
+                    },
+                    endpoint: '/analytics/subscriptions'
+                };
+            }
+            
+            if (query.includes('duplicate') || query.includes('find')) {
+                return {
+                    text: `I scanned your transactions and found **no duplicate charges** in the last 30 days. All looks good! ✓`,
+                    data: null,
+                    endpoint: '/analytics/duplicates'
+                };
+            }
+
+            if (query.includes('compare')) {
+                return {
+                    text: `📊 **Month-over-Month Comparison**\n\nThis month: €883.67 spent\nLast month: €756.23 spent\n\n↑ 16.8% increase, mainly from restaurant spending (+€45) and transport (+€32).`,
+                    data: { type: 'spending', ...monthlySpending },
+                    endpoint: '/analytics/compare'
+                };
+            }
+            
+            return {
+                text: `I can help you with:\n• Checking balances\n• Viewing transactions\n• Analyzing spending patterns\n• Forecasting your balance\n• Finding subscriptions\n\nTry asking something specific about your finances!`,
+                data: null,
+                endpoint: '/help'
+            };
+        }
+
+        function showTyping() {
+            const area = document.getElementById('messagesArea');
+            const typing = document.createElement('div');
+            typing.className = 'message assistant';
+            typing.id = 'typingIndicator';
+            typing.innerHTML = `
+                <div class="typing-indicator active">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            area.appendChild(typing);
+            area.scrollTop = area.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typing = document.getElementById('typingIndicator');
+            if (typing) typing.remove();
+        }
+
+        function logApiCall(method, endpoint) {
+            const log = document.getElementById('apiLog');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `
+                <span class="log-method">${method}</span>
+                <span class="log-endpoint">${endpoint}</span>
+                <div class="log-time">${new Date().toLocaleTimeString()}</div>
+            `;
+            log.insertBefore(entry, log.firstChild);
+            
+            // Keep only last 10 entries
+            while (log.children.length > 10) {
+                log.removeChild(log.lastChild);
+            }
+        }
+
+        // Enter to send
+        document.getElementById('chatInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Auto-resize textarea
+        document.getElementById('chatInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+    </script>
+</body>
+</html>
